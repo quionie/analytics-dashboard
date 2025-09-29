@@ -43,10 +43,13 @@ function SettingsPage({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setI
           description: 'Switch between dark and light themes',
           component: (
             <button
+              type="button"
               onClick={() => setIsDarkMode(!isDarkMode)}
               className={`w-16 h-8 rounded-full transition-colors duration-200 ${
                 isDarkMode ? 'bg-blue-500' : 'bg-gray-400'
               }`}
+              aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+              aria-pressed={isDarkMode}
             >
               <div className={`w-7 h-7 bg-white rounded-full shadow-md transition-transform duration-200 ${
                 isDarkMode ? 'translate-x-8' : 'translate-x-1'
@@ -69,6 +72,7 @@ function SettingsPage({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setI
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
               className="w-5 h-5 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+              aria-describedby="auto-refresh-description"
             />
           )
         },
@@ -80,6 +84,7 @@ function SettingsPage({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setI
               value={refreshInterval}
               onChange={(e) => setRefreshInterval(e.target.value)}
               className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-describedby="refresh-interval-description"
             >
               <option value="1">1 minute</option>
               <option value="5">5 minutes</option>
@@ -96,6 +101,7 @@ function SettingsPage({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setI
               value={dataSource}
               onChange={(e) => setDataSource(e.target.value)}
               className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-describedby="data-source-description"
             >
               <option value="live">Live Data</option>
               <option value="cached">Cached Data</option>
@@ -117,6 +123,7 @@ function SettingsPage({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setI
               checked={notifications}
               onChange={(e) => setNotifications(e.target.checked)}
               className="w-5 h-5 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+              aria-describedby="push-notifications-description"
             />
           )
         }
@@ -155,7 +162,7 @@ function SettingsPage({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setI
                   <div key={itemIndex} className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className={`text-lg font-medium mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.label}</h3>
-                      <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{item.description}</p>
+                      <p id={`${item.label.toLowerCase().replace(/\s+/g, '-')}-description`} className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{item.description}</p>
                     </div>
                     <div className="ml-4">
                       {item.component}
@@ -170,7 +177,11 @@ function SettingsPage({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setI
 
       {/* Save Button */}
       <div className="mt-8 flex justify-end">
-        <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center space-x-2">
+        <button 
+          type="button"
+          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center space-x-2"
+          aria-label="Save all settings"
+        >
           <Save className="w-5 h-5" />
           <span>Save Settings</span>
         </button>
@@ -251,7 +262,7 @@ function App() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white' : 'bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900'}`}>
       {/* Modern Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${isDarkMode ? 'bg-gray-800/95 backdrop-blur-xl border-r border-gray-700/50' : 'bg-white/95 backdrop-blur-xl border-r border-gray-200/50'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${isDarkMode ? 'bg-gray-800/95 backdrop-blur-xl border-r border-gray-700/50' : 'bg-white/95 backdrop-blur-xl border-r border-gray-200/50'}`} aria-label="Main navigation">
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
           <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'}`}>
@@ -265,8 +276,10 @@ function App() {
               </div>
             </div>
             <button 
+              type="button"
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden p-2 rounded-lg hover:bg-gray-700 transition-colors"
+              aria-label="Close sidebar"
             >
               <Menu className="w-5 h-5 text-gray-400" />
             </button>
@@ -281,12 +294,14 @@ function App() {
                 return (
                   <button
                     key={index}
+                    type="button"
                     onClick={() => setCurrentPage(item.id)}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25'
                         : `${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700/50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'}`
                     }`}
+                    aria-current={isActive ? 'page' : undefined}
                   >
                     <IconComponent className="w-5 h-5" />
                     <span className="font-medium">{item.label}</span>
@@ -299,15 +314,17 @@ function App() {
           {/* Sidebar Footer */}
           <div className={`p-6 border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'}`}>
             <button
+              type="button"
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-gray-700/50 hover:bg-gray-600/50 transition-colors"
+              aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
             >
               {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-blue-400" />}
               <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
           </div>
         </div>
-      </div>
+      </aside>
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
@@ -325,8 +342,10 @@ function App() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <button
+                  type="button"
                   onClick={() => setSidebarOpen(true)}
                   className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors lg:hidden"
+                  aria-label="Open sidebar"
                 >
                   <Menu className="w-5 h-5 text-gray-300" />
                 </button>
@@ -344,8 +363,10 @@ function App() {
                     return (
                       <button 
                         key={index} 
+                        type="button"
                         className="group relative p-2 rounded-xl bg-gray-700/50 hover:bg-gray-600/50 transition-all duration-200"
                         title={action.description}
+                        aria-label={action.description}
                       >
                         <IconComponent className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
                       </button>
@@ -354,7 +375,11 @@ function App() {
                 </div>
 
                 {/* Notifications */}
-                <button className="relative p-2 rounded-xl bg-gray-700/50 hover:bg-gray-600/50 transition-colors">
+                <button 
+                  type="button"
+                  className="relative p-2 rounded-xl bg-gray-700/50 hover:bg-gray-600/50 transition-colors"
+                  aria-label="Notifications"
+                >
                   <Bell className="w-5 h-5 text-gray-300 hover:text-white transition-colors" />
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>{' '}
                 </button>
@@ -365,7 +390,7 @@ function App() {
 
         {/* Main Content */}
         {currentPage === 'dashboard' && (
-          <main className="px-6 py-8">
+          <main className="px-6 py-8" role="main" aria-label="Dashboard content">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => {
@@ -722,12 +747,14 @@ function App() {
                   <div className="w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
                   <span>
                     <button 
+                      type="button"
                       onClick={() => setIsLoading(!isLoading)}
                       className={`text-sm transition-colors ${
                         isDarkMode 
                           ? 'text-gray-400 hover:text-white' 
                           : 'text-gray-600 hover:text-gray-900'
                       }`}
+                      aria-label="Refresh activity feed"
                     >
                       Refresh
                     </button>
@@ -795,7 +822,9 @@ function App() {
         )}
         
         {currentPage === 'settings' && (
-          <SettingsPage isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+          <main role="main" aria-label="Settings page">
+            <SettingsPage isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+          </main>
         )}
         </div>
     </div>
